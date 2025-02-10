@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  HasMany,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 
 @Table({
   tableName: 'asset',
@@ -17,4 +25,25 @@ export class Asset extends Model {
     type: DataType.STRING,
   })
   name: string;
+
+  @Column({
+    type: DataType.BOOLEAN,
+  })
+  folder: boolean;
+
+  @ApiProperty()
+  @ForeignKey(() => Asset)
+  @Column({
+    type: DataType.INTEGER,
+    field: 'parent_asset_id',
+  })
+  parentAssetId: number;
+
+  @ApiProperty()
+  @BelongsTo(() => Asset, { as: 'parentAsset' })
+  parentAsset: Asset;
+
+  @ApiProperty()
+  @HasMany(() => Asset, { as: 'childAssets' })
+  childAssets: Asset[];
 }
