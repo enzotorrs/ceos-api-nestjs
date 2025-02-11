@@ -7,13 +7,14 @@ export class CreateAssetDTO {
   name: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsBoolean()
-  folder: boolean;
+  folder?: boolean = false;
 
   @ApiProperty()
   @IsNumber()
   @IsOptional()
-  parentAssetId: number;
+  parentAssetId?: number;
 }
 
 export class UpdateAssetDTO {

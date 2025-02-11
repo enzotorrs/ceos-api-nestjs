@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Asset } from './asset.model';
 import { InjectModel } from '@nestjs/sequelize';
+import { CreateAssetDTO, UpdateAssetDTO } from './asset.dtos';
 
 @Injectable()
 export class AssetService {
@@ -9,11 +10,32 @@ export class AssetService {
     private assetRepository: typeof Asset,
   ) {}
 
-  async create(asset: any) {
+  async create(asset: CreateAssetDTO): Promise<Asset> {
     return this.assetRepository.create({ ...asset });
   }
 
-  async getAll() {
-    return this.assetRepository.findAll();
+  async update(assetId: number, asset: UpdateAssetDTO) {
+    const assetInDb = await this.getByIdOr404(assetId);
+    assetInDb.set(asset);
+    return assetInDb.save();
+  }
+
+  async getAll(): Promise<Asset[]> {
+    return this.assetRepository.findAll({
+      include: ['parentAsset', 'childAssets'],
+    });
+  }
+
+  async delete(id: number) {
+    const asset = await this.getByIdOr404(id);
+    return asset.destroy();
+  }
+
+  async getByIdOr404(id: number) {
+    const asset = await this.assetRepository.findByPk(id);
+    if (!asset) {
+      throw new NotFoundException('asset not found');
+    }
+    return asset;
   }
 }
