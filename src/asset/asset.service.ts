@@ -21,7 +21,10 @@ export class AssetService {
     const parentAsset = asset.parentAssetId ? await this.getByIdOr404(asset.parentAssetId) : undefined
     assetInDb.set(asset);
     await this.isValidAssetOr400(assetInDb, parentAsset)
-    return assetInDb.save();
+    await assetInDb.save();
+    return assetInDb.reload({
+      include: ['parentAsset', 'childAssets'],
+    })
   }
 
   async getAll(): Promise<Asset[]> {
