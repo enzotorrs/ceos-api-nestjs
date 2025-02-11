@@ -1,18 +1,52 @@
+import {
+  INestApplication,
+} from '@nestjs/common';
+import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AssetService } from './asset.service';
+import { AssetModule } from './asset.module';
 
 describe('AssetService', () => {
-  let service: AssetService;
+  let app: INestApplication;
+  let assetService: AssetService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [AssetService],
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [
+        AssetModule,
+        SequelizeModule.forRoot({
+          dialect: 'sqlite',
+          storage: ':memory:',
+          synchronize: true,
+          autoLoadModels: true,
+          logging: false,
+        }),
+      ],
     }).compile();
 
-    service = module.get<AssetService>(AssetService);
+    assetService = moduleFixture.get<AssetService>(AssetService);
+    app = moduleFixture.createNestApplication();
+    await app.init();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it('CREATE Asset not folder cannot be parent asset of another asset', async () => {
+    const asset = await assetService.create({
+      name: 'test',
+      folder: false
+    });
+    expect(async () => await assetService.create({
+      name: 'test',
+      folder: false,
+      parentAssetId: asset.id
+    })).rejects.toThrow()
+    const folder = await assetService.create({
+      name: 'test',
+      folder: true,
+    })
+    await assetService.create({
+      name: 'test',
+      folder: false,
+      parentAssetId: folder.id
+    })
   });
 });
