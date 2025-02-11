@@ -84,16 +84,4 @@ describe('Asset', () => {
       NotFoundException,
     );
   });
-
-  it('Asset not folder cannot be parent asset of another asset', async () => {
-    const asset = await assetService.create({
-      name: 'test'
-    });
-    const res = await request(app.getHttpServer())
-      .patch(`/asset/${asset.id}`)
-      .send({ name: 'test updated' })
-      .expect(200);
-    const check = await assetService.getByIdOr404(res.body.id);
-    expect(check.name).toBe('test updated');
-  });
 });

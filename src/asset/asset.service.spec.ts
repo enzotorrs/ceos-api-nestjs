@@ -49,4 +49,25 @@ describe('AssetService', () => {
       parentAssetId: folder.id
     })
   });
+
+  it('UPDATE Asset not folder cannot be parent asset of another asset', async () => {
+    const file = await assetService.create({
+      name: 'test',
+      folder: false
+    });
+    const file2 = await assetService.create({
+      name: 'test',
+      folder: false
+    });
+
+    expect(async () => await assetService.update(file.id,
+      { parentAssetId: file2.id })
+    ).rejects.toThrow()
+
+    const folder = await assetService.create({
+      name: 'test',
+      folder: true
+    });
+    await assetService.update(file.id, { parentAssetId: folder.id })
+  });
 });

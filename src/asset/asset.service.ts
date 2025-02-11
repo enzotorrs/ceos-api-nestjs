@@ -18,7 +18,9 @@ export class AssetService {
 
   async update(assetId: number, asset: UpdateAssetDTO) {
     const assetInDb = await this.getByIdOr404(assetId);
+    const parentAsset = asset.parentAssetId ? await this.getByIdOr404(asset.parentAssetId) : undefined
     assetInDb.set(asset);
+    await this.isValidAssetOr400(assetInDb, parentAsset)
     return assetInDb.save();
   }
 
@@ -41,9 +43,14 @@ export class AssetService {
     return asset;
   }
 
-  private async isValidAssetOr400(asset: CreateAssetDTO, parentAsset?: Asset) {
+  private async isValidAssetOr400(asset: CreateAssetDTO | Asset, parentAsset?: Asset) {
     if (parentAsset && !parentAsset.folder) {
       throw new BadRequestException("parent asset is not a folder")
+    }
+    if (asset instanceof Asset) {
+      if (asset.id === parentAsset?.id) {
+        throw new BadRequestException("asset id cannot be equal to parentAssetId")
+      }
     }
   }
 }
