@@ -6,6 +6,7 @@ import { SequelizeValidationFilter } from './core/filters/validation.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors({ origin: '*' });
   app.useGlobalFilters(new SequelizeValidationFilter());
   app.useGlobalPipes(
     new ValidationPipe({
