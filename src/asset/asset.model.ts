@@ -1,12 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { type } from 'os';
 import {
   BelongsTo,
   Column,
+  CreatedAt,
   DataType,
   ForeignKey,
   HasMany,
   Model,
   Table,
+  UpdatedAt,
 } from 'sequelize-typescript';
 
 @Table({
@@ -46,4 +49,27 @@ export class Asset extends Model {
   @ApiProperty()
   @HasMany(() => Asset, { as: 'childAssets' })
   childAssets: Asset[];
+
+  @ApiProperty()
+  @Column({
+    type: DataType.STRING,
+    field: 'upload_id'
+  })
+  uploadId: string
+
+  @ApiProperty()
+  @Column({
+    type: DataType.STRING,
+  })
+  filename: string
+
+  @ApiProperty()
+  @CreatedAt
+  @Column({ field: 'created_at' })
+  createdAt?: Date;
+
+  @ApiProperty()
+  @UpdatedAt
+  @Column({ field: 'updated_at' })
+  updatedAt?: Date;
 }

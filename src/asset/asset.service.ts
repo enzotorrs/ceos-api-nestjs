@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Asset } from './asset.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateAssetDTO, UpdateAssetDTO } from './asset.dtos';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class AssetService {
@@ -13,7 +14,7 @@ export class AssetService {
   async create(asset: CreateAssetDTO): Promise<Asset> {
     const parentAsset = asset.parentAssetId ? await this.getByIdOr404(asset.parentAssetId) : undefined
     await this.isValidAssetOr400(asset, parentAsset)
-    return this.assetRepository.create({ ...asset });
+    return this.assetRepository.create({ ...asset, uploadId: uuidv4()});
   }
 
   async update(assetId: number, asset: UpdateAssetDTO) {
@@ -31,6 +32,10 @@ export class AssetService {
     return this.assetRepository.findAll({
       include: ['parentAsset', 'childAssets'],
     });
+  }
+
+  async getByUploadId(uploadId: string){
+    return this.assetRepository.findOne({where: {uploadId, filename: null}})
   }
 
   async delete(id: number) {

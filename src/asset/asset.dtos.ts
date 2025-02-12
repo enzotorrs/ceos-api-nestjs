@@ -27,4 +27,9 @@ export class UpdateAssetDTO {
   @IsNumber()
   @IsOptional()
   parentAssetId?: number;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  filename?: string
 }
