@@ -17,8 +17,8 @@ import { SequelizeModule } from '@nestjs/sequelize';
         autoLoadModels: true,
         synchronize: true,
         logging: false,
-      })
+      }),
     }),
   ],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}

@@ -22,8 +22,8 @@ import { UploadService } from 'src/upload/upload.service';
 export class AssetController {
   constructor(
     private readonly assetService: AssetService,
-    private readonly uploadService: UploadService
-  ) { }
+    private readonly uploadService: UploadService,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -57,7 +57,10 @@ export class AssetController {
 
   @Post('upload/:uploadId')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@Param('uploadId') id: string, @UploadedFile() file: Express.Multer.File) {
+  async uploadFile(
+    @Param('uploadId') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     return await this.uploadService.handleUpload(file, id);
   }
 }

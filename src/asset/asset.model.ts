@@ -53,15 +53,15 @@ export class Asset extends Model {
   @ApiProperty()
   @Column({
     type: DataType.STRING,
-    field: 'upload_id'
+    field: 'upload_id',
   })
-  uploadId: string
+  uploadId: string;
 
   @ApiProperty()
   @Column({
     type: DataType.STRING,
   })
-  filename: string
+  filename: string;
 
   @ApiProperty()
   @CreatedAt

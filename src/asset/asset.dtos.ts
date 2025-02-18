@@ -31,5 +31,5 @@ export class UpdateAssetDTO {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  filename?: string
+  filename?: string;
 }

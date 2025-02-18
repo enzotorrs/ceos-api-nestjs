@@ -44,11 +44,9 @@ describe('Asset', () => {
   it('GET /asset/:id', async () => {
     await request(app.getHttpServer()).get('/asset/1').expect(404);
     const asset = await assetService.create({
-      name: 'test'
+      name: 'test',
     });
-    await request(app.getHttpServer())
-      .get(`/asset/${asset.id}`)
-      .expect(200);
+    await request(app.getHttpServer()).get(`/asset/${asset.id}`).expect(200);
   });
 
   it('POST /asset', async () => {
@@ -63,7 +61,7 @@ describe('Asset', () => {
   it('PATCH /asset/:id', async () => {
     await request(app.getHttpServer()).patch('/asset/1').expect(404);
     const asset = await assetService.create({
-      name: 'test'
+      name: 'test',
     });
     const res = await request(app.getHttpServer())
       .patch(`/asset/${asset.id}`)
@@ -72,16 +70,14 @@ describe('Asset', () => {
     const check = await assetService.getByIdOr404(res.body.id);
     expect(check.name).toBe('test updated');
   });
-  
+
   it('DELETE /asset/:id', async () => {
-    const asset= await assetService.create({
-      name: 'test'
+    const asset = await assetService.create({
+      name: 'test',
     });
-    await request(app.getHttpServer())
-      .delete(`/asset/${asset.id}`)
-      .expect(204);
-    expect(async () => await assetService.getByIdOr404(asset.id)).rejects.toThrow(
-      NotFoundException,
-    );
+    await request(app.getHttpServer()).delete(`/asset/${asset.id}`).expect(204);
+    expect(
+      async () => await assetService.getByIdOr404(asset.id),
+    ).rejects.toThrow(NotFoundException);
   });
 });

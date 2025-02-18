@@ -9,6 +9,6 @@ import { UploadModule } from 'src/upload/upload.module';
   controllers: [AssetController],
   providers: [AssetService],
   imports: [SequelizeModule.forFeature([Asset]), UploadModule],
-  exports: [AssetService]
+  exports: [AssetService],
 })
 export class AssetModule {}

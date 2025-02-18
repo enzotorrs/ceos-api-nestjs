@@ -4,8 +4,7 @@ import { AssetModule } from 'src/asset/asset.module';
 
 @Module({
   imports: [forwardRef(() => AssetModule)],
-  providers:[UploadService],
-  exports: [UploadService]
-
+  providers: [UploadService],
+  exports: [UploadService],
 })
 export class UploadModule {}

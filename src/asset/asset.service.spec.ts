@@ -1,6 +1,4 @@
-import {
-  INestApplication,
-} from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AssetService } from './asset.service';
@@ -32,42 +30,46 @@ describe('AssetService', () => {
   it('CREATE Asset not folder cannot be parent asset of another asset', async () => {
     const asset = await assetService.create({
       name: 'test',
-      folder: false
-    });
-    expect(async () => await assetService.create({
-      name: 'test',
       folder: false,
-      parentAssetId: asset.id
-    })).rejects.toThrow()
+    });
+    expect(
+      async () =>
+        await assetService.create({
+          name: 'test',
+          folder: false,
+          parentAssetId: asset.id,
+        }),
+    ).rejects.toThrow();
     const folder = await assetService.create({
       name: 'test',
       folder: true,
-    })
+    });
     await assetService.create({
       name: 'test',
       folder: false,
-      parentAssetId: folder.id
-    })
+      parentAssetId: folder.id,
+    });
   });
 
   it('UPDATE Asset not folder cannot be parent asset of another asset', async () => {
     const file = await assetService.create({
       name: 'test',
-      folder: false
+      folder: false,
     });
     const file2 = await assetService.create({
       name: 'test',
-      folder: false
+      folder: false,
     });
 
-    expect(async () => await assetService.update(file.id,
-      { parentAssetId: file2.id })
-    ).rejects.toThrow()
+    expect(
+      async () =>
+        await assetService.update(file.id, { parentAssetId: file2.id }),
+    ).rejects.toThrow();
 
     const folder = await assetService.create({
       name: 'test',
-      folder: true
+      folder: true,
     });
-    await assetService.update(file.id, { parentAssetId: folder.id })
+    await assetService.update(file.id, { parentAssetId: folder.id });
   });
 });
