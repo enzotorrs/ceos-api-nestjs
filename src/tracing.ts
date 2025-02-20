@@ -1,21 +1,40 @@
-import { diag, DiagConsoleLogger, DiagLogLevel } from '@opentelemetry/api';
+import { diag, DiagConsoleLogger, DiagLogLevel, metrics } from '@opentelemetry/api';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
-import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
-import { NestInstrumentation } from '@opentelemetry/instrumentation-nestjs-core';
-import { SequelizeInstrumentation } from 'opentelemetry-instrumentation-sequelize';
-diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.ERROR);
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
+import {
+  MeterProvider,
+  PeriodicExportingMetricReader,
+} from '@opentelemetry/sdk-metrics';
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 
+// diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.ALL);
+export const meterProvider = new MeterProvider({
+  readers: [
+    new PeriodicExportingMetricReader({
+      exporter: new OTLPMetricExporter({
+        url: 'http://olgtm:4317',
+      }),
+      exportIntervalMillis: 5000,
+      exportTimeoutMillis: 2000,
+
+    }),
+  ],
+});
+
+// Set the global MeterProvider
+metrics.setGlobalMeterProvider(meterProvider);
 const sdk = new NodeSDK({
   serviceName: 'ceos-api',
   traceExporter: new OTLPTraceExporter({
-    url: 'http://otel-collector:4317',
+    url: 'http://olgtm:4317',
   }),
-  instrumentations: [
-    new HttpInstrumentation(),
-    new NestInstrumentation(),
-    new SequelizeInstrumentation(),
-  ],
+  metricReader: new PeriodicExportingMetricReader({
+    exporter: new OTLPMetricExporter({
+      url: 'http://olgtm:4317',
+    }),
+  }),
+  instrumentations: [getNodeAutoInstrumentations()],
 });
 
 process.on('beforeExit', async () => {
