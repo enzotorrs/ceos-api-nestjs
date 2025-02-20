@@ -1,4 +1,9 @@
-import { diag, DiagConsoleLogger, DiagLogLevel, metrics } from '@opentelemetry/api';
+import {
+  diag,
+  DiagConsoleLogger,
+  DiagLogLevel,
+  metrics,
+} from '@opentelemetry/api';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
@@ -17,7 +22,6 @@ export const meterProvider = new MeterProvider({
       }),
       exportIntervalMillis: 5000,
       exportTimeoutMillis: 2000,
-
     }),
   ],
 });

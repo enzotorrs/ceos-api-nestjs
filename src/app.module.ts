@@ -11,8 +11,8 @@ import { RequestsMetricsInterceptor } from './core/routeMetrics.interceptor';
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      useClass: RequestsMetricsInterceptor
+      useClass: RequestsMetricsInterceptor,
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}
