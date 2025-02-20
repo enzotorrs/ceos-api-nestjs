@@ -1,0 +1,15 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 600
+      arrivalRate: 5
+scenarios:
+  - flow:
+      - post:
+          url: "/asset"
+          json:
+            name: "new asset"
+      - get:
+          url: "/asset/1"
+      - get:
+          url: "/asset/9999999999999"
