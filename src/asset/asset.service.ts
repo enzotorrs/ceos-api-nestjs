@@ -5,7 +5,12 @@ import {
 } from '@nestjs/common';
 import { Asset } from './asset.model';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreateAssetDTO, UpdateAssetDTO } from './asset.dtos';
+import {
+  AssetQuery,
+  AssetQueryResponse,
+  CreateAssetDTO,
+  UpdateAssetDTO,
+} from './asset.dtos';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -36,12 +41,31 @@ export class AssetService {
     });
   }
 
-  async getAll(): Promise<Asset[]> {
-    return this.assetRepository.findAll({
+  async getAll(query: AssetQuery): Promise<AssetQueryResponse> {
+    const { limit, offset } = this.getLimitAndOffset(
+      query.page,
+      query.pageSize,
+    );
+    const { count, rows } = await this.assetRepository.findAndCountAll({
+      limit,
+      offset,
       include: ['parentAsset', 'childAssets'],
     });
+    return {
+      totalItems: count,
+      totalPages: Math.ceil(count/limit),
+      page: query.page,
+      pageSize: query.pageSize,
+      assets: rows,
+    };
   }
 
+  private getLimitAndOffset(page: number, size: number) {
+    const limit = size ? size : 5;
+    const offset = page > 0 ? (page - 1) * limit : 0;
+
+    return { limit, offset };
+  }
   async getByUploadId(uploadId: string) {
     return this.assetRepository.findOne({
       where: { uploadId, filename: null },

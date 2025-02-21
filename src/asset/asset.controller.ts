@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -9,12 +10,18 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { AssetService } from './asset.service';
 import { Asset } from './asset.model';
-import { CreateAssetDTO, UpdateAssetDTO } from './asset.dtos';
+import {
+  AssetQuery,
+  AssetQueryResponse,
+  CreateAssetDTO,
+  UpdateAssetDTO,
+} from './asset.dtos';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from 'src/upload/upload.service';
 
@@ -32,8 +39,11 @@ export class AssetController {
   }
 
   @Get()
-  async getAll(): Promise<Asset[]> {
-    return this.assetService.getAll();
+  async getAll(@Query() query: AssetQuery): Promise<AssetQueryResponse> {
+    if (query.pageSize > 500) {
+      throw new BadRequestException('pageSize cannot be greater than 500');
+    }
+    return this.assetService.getAll(query);
   }
 
   @Get(':id')
